@@ -28,6 +28,7 @@
 #include "ibrdtn/data/PrimaryBlock.h"
 #include "ibrdtn/data/PayloadBlock.h"
 #include "ibrdtn/data/ExtensionBlock.h"
+#include "ibrdtn/data/DBlock.h"
 #include <ibrcommon/refcnt_ptr.h>
 #include <ibrcommon/Iterator.h>
 #include <ostream>

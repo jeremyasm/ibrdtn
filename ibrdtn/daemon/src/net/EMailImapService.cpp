@@ -524,6 +524,8 @@ namespace dtn
 			}
 		}
 
+
+
 		void EMailImapService::returningMailCheck(vmime::ref<vmime::net::message> &msg)
 		{
 			dtn::data::BundleID bid;

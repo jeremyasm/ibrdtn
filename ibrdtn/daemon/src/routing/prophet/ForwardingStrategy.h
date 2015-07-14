@@ -48,6 +48,7 @@ namespace dtn
 		protected:
 			ProphetRoutingExtension *_prophet_router;
 		};
+
 	} /* namespace routing */
 } /* namespace dtn */
 #endif /* FORWARDINGSTRATEGY_H_ */

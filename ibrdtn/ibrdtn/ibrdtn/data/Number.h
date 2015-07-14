@@ -25,6 +25,12 @@
 #include "ibrdtn/data/SDNV.h"
 #include <stdint.h>
 #include <sys/types.h>
+//added by lyx
+#include <string>
+
+
+//added by lyx
+using namespace std;
 
 namespace dtn
 {
@@ -39,6 +45,11 @@ namespace dtn
 		typedef dtn::data::SDNV<float> Float;
 		typedef dtn::data::SDNV<int> Integer;
 		typedef dtn::data::SDNV<Size> Timestamp;
+
+		//added by lyx
+		//typedef dtn::data::SDNV<string> String; //has an influence on stream....
+
+
 
 		template<typename E>
 		class Bitset : public dtn::data::SDNV<Size> {
