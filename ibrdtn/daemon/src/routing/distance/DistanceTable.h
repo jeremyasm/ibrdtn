@@ -11,6 +11,8 @@
 
 #include <vector>
 #include <map>
+#include <ibrdtn/data/BundleString.h>
+#include "routing/distance/DistanceEntry.h"
 
 namespace dtn
 {
@@ -23,7 +25,7 @@ namespace dtn
 			virtual ~DistanceTable();
 
 
-			std::map<dtn::data::BundleString, DistanceAndTimestamp > _distanceTable;
+			std::map<dtn::data::BundleString, dtn::routing::DistanceAndTimestamp > _distanceTable;
 
 		};
 	}

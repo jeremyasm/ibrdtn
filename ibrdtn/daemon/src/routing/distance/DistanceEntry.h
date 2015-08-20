@@ -25,7 +25,7 @@ namespace dtn
 
 		public:
 			DistanceEntry();
-			virtual ~DistanceEntry();
+			~DistanceEntry(); //virtual
 
 			//void setEndpointIdentifier(dtn::data::BundleString value);
 			//void setDistance(dtn::data::Integer value);
@@ -36,8 +36,8 @@ namespace dtn
 			//dtn::data::Timestamp getTimestamp();
 
 			dtn::data::BundleString _endpointIdentifier;
-			//dtn::data::Integer _distance;
-			//dtn::data::Timestamp _timestamp; //see dtn::data::Timestamp !!!!
+			//?????????????????? if we need a DistanceAndTimestamp type variable here ???????????????????
+			//DistanceAndTimestamp dnt;
 
 		};
 
@@ -47,7 +47,8 @@ namespace dtn
 			DistanceAndTimestamp();
 			virtual ~DistanceAndTimestamp();
 
-			dtn::data::Integer _distance;
+			//dtn::data::Integer _distance;
+			int _distance;
 			dtn::data::Timestamp _timestamp; //see dtn::data::Timestamp !!!!
 		};
 	} /* namespace routing */

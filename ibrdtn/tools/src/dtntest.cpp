@@ -64,7 +64,6 @@ class EchoClient : public dtn::api::Client
 			// set bundle destination
 			b.destination = destination;
 
-
 			// enable encryption if requested
 			if (encryption) b.set(dtn::data::PrimaryBlock::DTNSEC_REQUEST_ENCRYPT, true);
 

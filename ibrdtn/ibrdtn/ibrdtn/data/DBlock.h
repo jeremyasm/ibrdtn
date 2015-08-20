@@ -46,13 +46,21 @@ namespace dtn
 			void setType(dtn::data::Integer value);
 			void setDataName(dtn::data::BundleString value);
 
+			//void setSrcDist(int value);
+			//void setDestDist(int value);
+			//void setType(int value);
+
 			//added by lyx 2015-7-2
-			dtn::data::Integer getSrcDist() const;
+			dtn::data::Integer getSrcDist();
 			dtn::data::Integer getDestDist() const;
 			dtn::data::Integer getType() const;
 			dtn::data::BundleString getDataName() const;
 
-		private:
+			//int getSrcDist() const;
+			//int getDestDist() const;
+			//int getType() const;
+
+		//private:
 			dtn::data::Integer _var1;
 			dtn::data::BundleString _var2;
 
@@ -61,6 +69,10 @@ namespace dtn
 			dtn::data::Integer _destDist;
 			dtn::data::Integer _type;
 			dtn::data::BundleString _dataName;
+
+			//int _srcDist;
+			//int _destDist;
+			//int _type;
 		};
 
 		/**

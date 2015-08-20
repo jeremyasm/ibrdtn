@@ -1,5 +1,5 @@
 ## sub directory
-SUBDIRS = epidemic flooding prophet newflooding
+SUBDIRS = distance epidemic flooding prophet newflooding
 
 routing_SOURCES = \
 	RoutingExtension.h \
@@ -36,7 +36,7 @@ routing_SOURCES = \
 AM_CPPFLAGS = -I$(top_srcdir)/src $(ibrdtn_CFLAGS)
 AM_LDFLAGS = $(ibrdtn_LIBS)
 
-librouting_la_LIBADD = flooding/librtflooding.la epidemic/librtepidemic.la prophet/librtprophet.la
+librouting_la_LIBADD = flooding/librtflooding.la epidemic/librtepidemic.la prophet/librtprophet.la distance/librtdistance.la
 
 if REGEX
 routing_SOURCES += StaticRegexRoute.h StaticRegexRoute.cpp

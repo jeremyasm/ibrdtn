@@ -45,11 +45,13 @@ namespace dtn
 		}
 
 		void DBlock::setDestDist(dtn::data::Integer value)
+		//void DBlock::setDestDist(int value)
 		{
 			_destDist = value;
 		}
 
 		void DBlock::setType(dtn::data::Integer value)
+		//void DBlock::setType(int value)
 		{
 			_type = value;
 		}
@@ -60,7 +62,24 @@ namespace dtn
 		}
 		//*************
 
+		dtn::data::Integer DBlock::getSrcDist(){
 
+			return _srcDist;
+		}
+
+		dtn::data::Integer DBlock::getDestDist() const{
+
+			return _destDist;
+		}
+
+		dtn::data::Integer DBlock::getType() const{
+
+			return _type;
+		}
+		dtn::data::BundleString DBlock::getDataName() const{
+
+			return _dataName;
+		}
 
 
 

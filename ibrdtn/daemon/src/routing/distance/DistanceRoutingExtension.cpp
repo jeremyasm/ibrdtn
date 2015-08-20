@@ -1,25 +1,4 @@
-/*
- * FloodRoutingExtension.cpp
- *
- * Copyright (C) 2011 IBR, TU Braunschweig
- *
- * Written-by: Johannes Morgenroth <morgenroth@ibr.cs.tu-bs.de>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
-#include "routing/flooding/FloodRoutingExtension.h"
+#include "routing/distance/DistanceRoutingExtension.h"
 #include "routing/QueueBundleEvent.h"
 #include "core/NodeEvent.h"
 #include "net/TransferCompletedEvent.h"
@@ -29,6 +8,14 @@
 #include "net/ConnectionManager.h"
 #include "Configuration.h"
 #include "core/BundleCore.h"
+
+//----------------
+#include "PendingInterestTable.h"
+#include "ContentStorage.h"
+#include "DistanceTable.h"
+#include "routing/distance/DataEmTs.h"
+#include <ibrdtn/utils/Clock.h>
+//----------------
 
 #include <ibrdtn/data/MetaBundle.h>
 #include <ibrcommon/thread/MutexLock.h>
@@ -49,34 +36,100 @@ namespace dtn
 {
 	namespace routing
 	{
-		const std::string FloodRoutingExtension::TAG = "FloodRoutingExtension";
+		//const std::string DistanceRoutingExtension::TAG = "DistanceRoutingExtension";
+		const std::string DistanceRoutingExtension::TAG = "DistanceRoutingExtension";
 
-		int i = 0;  //for test, lyx
+		int itest = 0;  //for test, lyx
 
-		FloodRoutingExtension::FloodRoutingExtension()
+		//create the Distance Table
+		DistanceTable dt;
+		//create the Content Storage
+		ContentStorage cs;
+		//create the Pending Interest Table
+		PendingInterestTable pit;
+
+		DistanceRoutingExtension::DistanceRoutingExtension()
 		{
 			// write something to the syslog
-			IBRCOMMON_LOGGER_TAG(FloodRoutingExtension::TAG, info) << "Initializing flooding routing module" << IBRCOMMON_LOGGER_ENDL;
+			IBRCOMMON_LOGGER_TAG(DistanceRoutingExtension::TAG, info) << "Initializing distance routing module" << IBRCOMMON_LOGGER_ENDL;
 		}
 
-		FloodRoutingExtension::~FloodRoutingExtension()
+		DistanceRoutingExtension::~DistanceRoutingExtension()
 		{
 			join();
 		}
 
-		void FloodRoutingExtension::eventDataChanged(const dtn::data::EID &peer) throw ()
+		void DistanceRoutingExtension::eventDataChanged(const dtn::data::EID &peer) throw ()
 		{
 			// transfer the next bundle to this destination
 			_taskqueue.push( new SearchNextBundleTask( peer ) );
 		}
 
-		void FloodRoutingExtension::eventBundleQueued(const dtn::data::EID &peer, const dtn::data::MetaBundle &meta) throw ()
+		void DistanceRoutingExtension::eventBundleQueued(const dtn::data::EID &peer, const dtn::data::MetaBundle &meta) throw ()
 		{
 			// new bundles trigger a recheck for all neighbors
 			const std::set<dtn::core::Node> nl = dtn::core::BundleCore::getInstance().getConnectionManager().getNeighbors();
 
-			i++;cout<<i<<endl;
-			cout<<"Recevie a bundle!!!" <<endl;  //for test, lyx
+			//******************************************************************************************
+			itest++;cout<<itest<<endl;
+			cout<<"Recevie a bundle!!! This is distance routing extension !!!" <<endl;  //for test, lyx
+
+			BundleString dataName817 = BundleString("THREENODESTEST");
+
+			std::map<dtn::data::BundleString, DataEmTs >::iterator iter_dataName;
+			iter_dataName = cs._contentStorage.find(dataName817);
+			if(iter_dataName != cs._contentStorage.end()){
+
+					cout<<"The data is : "<< cs._contentStorage[dataName817]._data<<endl;
+					cout<<"The eligible mark is : "<<cs._contentStorage[dataName817]._eligibleMark<<endl;
+					cout<<"The timestamp is : "<<cs._contentStorage[dataName817]._timestamp<<endl;
+			}
+			else{  //Couldn't find the key, so just insert/add one new entry ...
+					cout<<"Couldn't find the key!!!"<< endl;
+			}
+
+			//---------------
+			dtn::data::Bundle bundle2 = dtn::core::BundleCore::getInstance().getStorage().get(meta);
+			for (dtn::data::Bundle::const_iterator iter = bundle2.begin(); iter != bundle2.end(); ++iter) {
+				// Payload Block
+				try {
+					const dtn::data::PayloadBlock &payload =
+							dynamic_cast<const dtn::data::PayloadBlock&>(**iter);
+
+					// Create payload attachment
+					ibrcommon::BLOB::iostream data = payload.getBLOB().iostream();
+					std::stringstream ss;
+					ss << data->rdbuf();
+
+					continue;
+				} catch(const std::bad_cast&) {};
+
+				// Add extension blocks, in this case, it's DBlock!
+				try {
+					const dtn::data::DBlock &ddblock =
+							dynamic_cast<const dtn::data::DBlock&>(**iter);
+					cout<<"--- Print the DBlock ---"<<endl;
+					cout<<"--- the data name of the bundle is: "<<ddblock.getDataName()<<endl;
+					cout<<"--- the type of the bundle is:" << ddblock.getType()<<endl;
+					cout<<"--- the distance to the destination node is: "<< ddblock.getDestDist() <<endl;
+
+
+					// Get EIDs
+					if(ddblock.get(dtn::data::Block::BLOCK_CONTAINS_EIDS))
+					{
+						const Block::eid_list &eids = ddblock.getEIDList();
+						for(Block::eid_list::const_iterator eidIt = eids.begin(); eidIt != eids.end(); eidIt++)
+						{
+
+						}
+					}
+
+					continue;
+				} catch(const std::bad_cast&) {};
+
+			}
+			//---------------
+			//*****************************************************************************************
 
 
 			for (std::set<dtn::core::Node>::const_iterator iter = nl.begin(); iter != nl.end(); ++iter)
@@ -91,42 +144,60 @@ namespace dtn
 			}
 		}
 
-		void FloodRoutingExtension::componentUp() throw ()
+		void DistanceRoutingExtension::componentUp() throw ()
 		{
 			// reset the task queue
 			_taskqueue.reset();
+
+			cout<<"ComponetUp Up Up Up!!!"<<endl;
+
+			//**************************************************
+			//Some initialization of data structures
+			cout<<"---------------- ComponetUp Up Up Up!!! ------------------"<<endl;
+			dt._distanceTable.clear();
+			cs._contentStorage.clear();
+			pit._pendingInterestTable.clear();
+			//-----------------------------------
+			dtn::routing::DataEmTs det_test2;
+			dtn::data::BundleString dataName_test2 = BundleString("THREENODESTEST");
+			det_test2._data = BundleString("it's a three nodes test!");
+			det_test2._eligibleMark = 1;   //0 -- ineligible, 1 -- eligible
+			det_test2._timestamp = dtn::utils::Clock::getTime();
+			cs._contentStorage.insert(pair<dtn::data::BundleString, DataEmTs>(dataName_test2,det_test2));
+			//**************************************************
 
 			// routine checked for throw() on 15.02.2013
 			try {
 				// run the thread
 				start();
 			} catch (const ibrcommon::ThreadException &ex) {
-				IBRCOMMON_LOGGER_TAG(FloodRoutingExtension::TAG, error) << "componentUp failed: " << ex.what() << IBRCOMMON_LOGGER_ENDL;
+				IBRCOMMON_LOGGER_TAG(DistanceRoutingExtension::TAG, error) << "componentUp failed: " << ex.what() << IBRCOMMON_LOGGER_ENDL;
 			}
 		}
 
-		void FloodRoutingExtension::componentDown() throw ()
+		void DistanceRoutingExtension::componentDown() throw ()
 		{
 			try {
 				// stop the thread
 				stop();
 				join();
 			} catch (const ibrcommon::ThreadException &ex) {
-				IBRCOMMON_LOGGER_TAG(FloodRoutingExtension::TAG, error) << "componentDown failed: " << ex.what() << IBRCOMMON_LOGGER_ENDL;
+				IBRCOMMON_LOGGER_TAG(DistanceRoutingExtension::TAG, error) << "componentDown failed: " << ex.what() << IBRCOMMON_LOGGER_ENDL;
 			}
 		}
 
-		const std::string FloodRoutingExtension::getTag() const throw ()
+		const std::string DistanceRoutingExtension::getTag() const throw ()
 		{
-			return "flooding";
+			//return "flooding";
+			return "distance";
 		}
 
-		void FloodRoutingExtension::__cancellation() throw ()
+		void DistanceRoutingExtension::__cancellation() throw ()
 		{
 			_taskqueue.abort();
 		}
 
-		void FloodRoutingExtension::run() throw ()
+		void DistanceRoutingExtension::run() throw ()
 		{
 			class BundleFilter : public dtn::storage::BundleSelector
 			{
@@ -231,7 +302,7 @@ namespace dtn
 					Task *t = _taskqueue.poll();
 					std::auto_ptr<Task> killer(t);
 
-					IBRCOMMON_LOGGER_DEBUG_TAG(FloodRoutingExtension::TAG, 50) << "processing task " << t->toString() << IBRCOMMON_LOGGER_ENDL;
+					IBRCOMMON_LOGGER_DEBUG_TAG(DistanceRoutingExtension::TAG, 50) << "processing task " << t->toString() << IBRCOMMON_LOGGER_ENDL;
 
 					try {
 						try {
@@ -272,7 +343,7 @@ namespace dtn
 								BundleFilter filter(entry, neighbors, context, plist);
 
 								// some debug
-								IBRCOMMON_LOGGER_DEBUG_TAG(FloodRoutingExtension::TAG, 40) << "search some bundles not known by " << task.eid.getString() << IBRCOMMON_LOGGER_ENDL;
+								IBRCOMMON_LOGGER_DEBUG_TAG(DistanceRoutingExtension::TAG, 40) << "search some bundles not known by " << task.eid.getString() << IBRCOMMON_LOGGER_ENDL;
 
 								// query all bundles from the storage
 								(**this).getSeeker().get(filter, list);
@@ -296,10 +367,10 @@ namespace dtn
 							IBRCOMMON_LOGGER_DEBUG_TAG(TAG, 10) << "task " << t->toString() << " aborted: " << ex.what() << IBRCOMMON_LOGGER_ENDL;
 						} catch (const std::bad_cast&) { };
 					} catch (const ibrcommon::Exception &ex) {
-						IBRCOMMON_LOGGER_DEBUG_TAG(FloodRoutingExtension::TAG, 20) << "task failed: " << ex.what() << IBRCOMMON_LOGGER_ENDL;
+						IBRCOMMON_LOGGER_DEBUG_TAG(DistanceRoutingExtension::TAG, 20) << "task failed: " << ex.what() << IBRCOMMON_LOGGER_ENDL;
 					}
 				} catch (const std::exception &ex) {
-					IBRCOMMON_LOGGER_DEBUG_TAG(FloodRoutingExtension::TAG, 15) << "terminated due to " << ex.what() << IBRCOMMON_LOGGER_ENDL;
+					IBRCOMMON_LOGGER_DEBUG_TAG(DistanceRoutingExtension::TAG, 15) << "terminated due to " << ex.what() << IBRCOMMON_LOGGER_ENDL;
 					return;
 				}
 
@@ -309,14 +380,14 @@ namespace dtn
 
 		/****************************************/
 
-		FloodRoutingExtension::SearchNextBundleTask::SearchNextBundleTask(const dtn::data::EID &e)
+		DistanceRoutingExtension::SearchNextBundleTask::SearchNextBundleTask(const dtn::data::EID &e)
 		 : eid(e)
 		{ }
 
-		FloodRoutingExtension::SearchNextBundleTask::~SearchNextBundleTask()
+		DistanceRoutingExtension::SearchNextBundleTask::~SearchNextBundleTask()
 		{ }
 
-		std::string FloodRoutingExtension::SearchNextBundleTask::toString()
+		std::string DistanceRoutingExtension::SearchNextBundleTask::toString()
 		{
 			return "SearchNextBundleTask: " + eid.getString();
 		}

@@ -6,5 +6,36 @@
  */
 
 
+#include "ContentStorageEntry.h"
+
+namespace dtn
+{
+	namespace routing
+	{
+		/**
+		 *
+		 * implementation of the ContentStorageEntry class
+		 */
+
+			ContentStorageEntry::ContentStorageEntry(){
+			}
+			//virtual
+			ContentStorageEntry::~ContentStorageEntry(){
+			}
+
+			/*
+			DataET::DataET(){
+
+			}
+
+			virtual DataET::~DataET(){
+
+			}
+
+			*/
+
+
+	} /* namespace routing */
+} /* namespace dtn */
 
 

@@ -51,6 +51,7 @@
 #include "routing/epidemic/EpidemicRoutingExtension.h"
 #include "routing/prophet/ProphetRoutingExtension.h"
 #include "routing/flooding/FloodRoutingExtension.h"
+#include "routing/distance/DistanceRoutingExtension.h" //add by lyx
 
 #include "core/BundleExpiredEvent.h"
 #include "routing/RequeueBundleEvent.h"
@@ -1609,6 +1610,16 @@ namespace dtn
 			{
 				IBRCOMMON_LOGGER_TAG(NativeDaemon::TAG, info) << "Using flooding routing extensions" << IBRCOMMON_LOGGER_ENDL;
 				router.add( new dtn::routing::FloodRoutingExtension() );
+
+				// add neighbor routing (direct-delivery) extension
+				router.add( new dtn::routing::NeighborRoutingExtension() );
+				break;
+			}
+
+			case dtn::daemon::Configuration::DISTANCE_ROUTING:
+			{
+				IBRCOMMON_LOGGER_TAG(NativeDaemon::TAG, info) << "Using distance routing extensions" << IBRCOMMON_LOGGER_ENDL;
+				router.add( new dtn::routing::DistanceRoutingExtension() );
 
 				// add neighbor routing (direct-delivery) extension
 				router.add( new dtn::routing::NeighborRoutingExtension() );

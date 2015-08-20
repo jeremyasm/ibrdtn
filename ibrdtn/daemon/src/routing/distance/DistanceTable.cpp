@@ -5,7 +5,7 @@
  *      Author: jeremy
  */
 
-
+#include "DistanceTable.h"
 #include <vector>
 #include <map>
 
@@ -13,16 +13,16 @@ namespace dtn
 {
 	namespace routing
 	{
-		void DistanceTable(){
+		DistanceTable::DistanceTable(){
 
 		}
 
-		virtual void  ~DistanceTable(){
+		DistanceTable::~DistanceTable(){
 
 		}
 
 
-		std::map<dtn::data::BundleString, DistanceAndTimestamp > _distanceTable;
+		//std::map<dtn::data::BundleString, DistanceAndTimestamp > _distanceTable;
 
 
 	}

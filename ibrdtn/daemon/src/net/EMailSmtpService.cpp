@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2013 IBR, TU Braunschweig
  *
- * Written-by: Björn Gernert <mail@bjoern-gernert.de>
+ * Written-by: Bjoern Gernert <mail@bjoern-gernert.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

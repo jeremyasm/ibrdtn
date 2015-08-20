@@ -18,15 +18,15 @@ namespace dtn
 
 			DistanceEntry::DistanceEntry(){
 			}
-
-			virtual DistanceEntry::~DistanceEntry(){
+			//virtual
+			DistanceEntry::~DistanceEntry(){
 			}
 
 			DistanceAndTimestamp::DistanceAndTimestamp(){
 
 			}
-
-			virtual DistanceAndTimestamp::~DistanceAndTimestamp(){
+			//virtual
+			DistanceAndTimestamp::~DistanceAndTimestamp(){
 
 			}
 
