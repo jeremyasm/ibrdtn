@@ -1,5 +1,5 @@
 ## sub directory
-SUBDIRS = distance epidemic flooding prophet newflooding
+SUBDIRS = distance epidemic flooding prophet
 
 routing_SOURCES = \
 	RoutingExtension.h \
