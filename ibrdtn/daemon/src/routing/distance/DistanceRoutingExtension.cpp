@@ -36,7 +36,6 @@ namespace dtn
 {
 	namespace routing
 	{
-		//const std::string DistanceRoutingExtension::TAG = "DistanceRoutingExtension";
 		const std::string DistanceRoutingExtension::TAG = "DistanceRoutingExtension";
 
 		int itest = 0;  //for test, lyx
@@ -89,7 +88,34 @@ namespace dtn
 			}
 
 			//---------------
+
+
 			dtn::data::Bundle bundle2 = dtn::core::BundleCore::getInstance().getStorage().get(meta);
+			// Read from Primary Bundle Block
+			cout<<"----- Primary Bundle Block -----"<<endl;
+			cout<<"Bundle-EMailCL-Version: "<<"1"<<endl;
+			cout<<"Bundle-Flags: "<<bundle2.procflags.toString()<<endl;
+			cout<<"Bundle-Destination: "<<bundle2.destination.getString()<<endl;
+			cout<<"Bundle-Source: "<<bundle2.source.getString()<<endl;
+			/*
+									header->appendField(hfFactory->create("Bundle-EMailCL-Version", "1"));
+									header->appendField(hfFactory->create("Bundle-Flags",
+											bundle.procflags.toString()));
+									header->appendField(hfFactory->create("Bundle-Destination",
+											bundle.destination.getString()));
+									header->appendField(hfFactory->create("Bundle-Source",
+											bundle.source.getString()));
+									header->appendField(hfFactory->create("Bundle-Report-To",
+											bundle.reportto.getString()));
+									header->appendField(hfFactory->create("Bundle-Custodian",
+											bundle.custodian.getString()));
+									header->appendField(hfFactory->create("Bundle-Creation-Time",
+											bundle.timestamp.toString()));
+									header->appendField(hfFactory->create("Bundle-Sequence-Number",
+											bundle.sequencenumber.toString()));
+									header->appendField(hfFactory->create("Bundle-Lifetime",
+											bundle.lifetime.toString()));
+											*/
 			for (dtn::data::Bundle::const_iterator iter = bundle2.begin(); iter != bundle2.end(); ++iter) {
 				// Payload Block
 				try {
@@ -188,7 +214,6 @@ namespace dtn
 
 		const std::string DistanceRoutingExtension::getTag() const throw ()
 		{
-			//return "flooding";
 			return "distance";
 		}
 
