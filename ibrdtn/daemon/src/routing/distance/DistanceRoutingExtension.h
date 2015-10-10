@@ -22,7 +22,7 @@ namespace dtn
 		class DistanceRoutingExtension : public RoutingExtension, public ibrcommon::JoinableThread
 		{
 			static const std::string TAG;
-			int itest = 0;  //for test, lyx
+			//int itest = 0;  //for test, lyx
 
 		public:
 			DistanceRoutingExtension();
