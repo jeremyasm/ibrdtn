@@ -86,14 +86,11 @@ class EchoClient : public dtn::api::Client
 			dtn::data::BundleBuilder builder(b);
 			size_t flag1;
 			dtn::data::DBlock &db = builder.insert<dtn::data::DBlock>(flag1);
-			//db.setVar1(dtn::data::Integer(42));
-			//db.setVar2(dtn::data::BundleString("Dblock test !!!"));
 
 			db.setSrcDist(dtn::data::Integer(1));
 			db.setDestDist(dtn::data::Integer(2));
 			db.setType(dtn::data::Integer(1));
-			db.setDataName(BundleString("Oh yeah, it's an extension block !!!"));
-
+			db.setDataName(BundleString("test on 1025!!!"));
 
 			// open the iostream
 			{

@@ -6,7 +6,7 @@ AM_LDFLAGS = @ibrdtn_LIBS@ @DAEMON_LIBS@ @ARCHIVE_LIBS@ @tffs_LIBS@
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
-bin_PROGRAMS = dtntest dtnping dtnrecv dtnsend dtntracepath dtntrigger dtnconvert dtnstream
+bin_PROGRAMS = dtntest distancetest dtnping dtnrecv dtnsend dtntracepath dtntrigger dtnconvert dtnstream
 
 # compile dtninbox and dtnoutbox if libarchive is present
 if LIBARCHIVE
@@ -39,6 +39,7 @@ dtnoutbox_SOURCES = dtnoutbox.cpp $(tarutils_src)
 endif
 
 dtntest_SOURCES = dtntest.cpp
+distancetest_SOURCES = distancetest.cpp
 dtnping_SOURCES = dtnping.cpp
 dtnrecv_SOURCES = dtnrecv.cpp
 dtnsend_SOURCES = dtnsend.cpp

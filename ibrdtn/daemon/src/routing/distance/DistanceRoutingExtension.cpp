@@ -70,11 +70,17 @@ namespace dtn
 			const std::set<dtn::core::Node> nl = dtn::core::BundleCore::getInstance().getConnectionManager().getNeighbors();
 
 			//******************************************************************************************
-			itest++;cout<<itest<<endl;
-			cout<<"Recevie a bundle!!! This is distance routing extension !!!" <<endl;  //for test, lyx
+			itest++;
+			cout<<"Bundle No."<<itest<<endl;
+			//cout<<"Recevie a bundle!!! This is distance routing extension !!!" <<endl;  //for test, lyx
 
+			//****************
+			//the data name should be read from the bundle!!!!!!
+			//this is a fake name;!!!! just for test
+			//****************
+			/*
 			BundleString dataName817 = BundleString("THREENODESTEST");
-
+			cout<<"****************************************************"<<endl;
 			std::map<dtn::data::BundleString, DataEmTs >::iterator iter_dataName;
 			iter_dataName = cs._contentStorage.find(dataName817);
 			if(iter_dataName != cs._contentStorage.end()){
@@ -86,58 +92,40 @@ namespace dtn
 			else{  //Couldn't find the key, so just insert/add one new entry ...
 					cout<<"Couldn't find the key!!!"<< endl;
 			}
-
+			cout<<"**********"<<endl;
+			*/
 			//---------------
 
 
 			dtn::data::Bundle bundle2 = dtn::core::BundleCore::getInstance().getStorage().get(meta);
 			// Read from Primary Bundle Block
 			cout<<"----- Primary Bundle Block -----"<<endl;
-			cout<<"Bundle-EMailCL-Version: "<<"1"<<endl;
 			cout<<"Bundle-Flags: "<<bundle2.procflags.toString()<<endl;
 			cout<<"Bundle-Destination: "<<bundle2.destination.getString()<<endl;
 			cout<<"Bundle-Source: "<<bundle2.source.getString()<<endl;
-			/*
-									header->appendField(hfFactory->create("Bundle-EMailCL-Version", "1"));
-									header->appendField(hfFactory->create("Bundle-Flags",
-											bundle.procflags.toString()));
-									header->appendField(hfFactory->create("Bundle-Destination",
-											bundle.destination.getString()));
-									header->appendField(hfFactory->create("Bundle-Source",
-											bundle.source.getString()));
-									header->appendField(hfFactory->create("Bundle-Report-To",
-											bundle.reportto.getString()));
-									header->appendField(hfFactory->create("Bundle-Custodian",
-											bundle.custodian.getString()));
-									header->appendField(hfFactory->create("Bundle-Creation-Time",
-											bundle.timestamp.toString()));
-									header->appendField(hfFactory->create("Bundle-Sequence-Number",
-											bundle.sequencenumber.toString()));
-									header->appendField(hfFactory->create("Bundle-Lifetime",
-											bundle.lifetime.toString()));
-											*/
+
 			for (dtn::data::Bundle::const_iterator iter = bundle2.begin(); iter != bundle2.end(); ++iter) {
+
 				// Payload Block
 				try {
 					const dtn::data::PayloadBlock &payload =
 							dynamic_cast<const dtn::data::PayloadBlock&>(**iter);
-
+					cout<<"----- Print the Payload Block -----"<<endl;
 					// Create payload attachment
 					ibrcommon::BLOB::iostream data = payload.getBLOB().iostream();
 					std::stringstream ss;
 					ss << data->rdbuf();
 
-					continue;
 				} catch(const std::bad_cast&) {};
 
-				// Add extension blocks, in this case, it's DBlock!
+				//DBlock
 				try {
 					const dtn::data::DBlock &ddblock =
 							dynamic_cast<const dtn::data::DBlock&>(**iter);
-					cout<<"--- Print the DBlock ---"<<endl;
-					cout<<"--- the data name of the bundle is: "<<ddblock.getDataName()<<endl;
-					cout<<"--- the type of the bundle is:" << ddblock.getType()<<endl;
-					cout<<"--- the distance to the destination node is: "<< ddblock.getDestDist() <<endl;
+					cout<<"----- Print the DBlock -----"<<endl;
+					cout<<"--- the data name of the bundle is: "<< ddblock.getDataName()<<endl;
+					cout<<"--- the type of the bundle is:" << ddblock.getType().get()<<endl;
+					cout<<"--- the distance to the destination node is: "<< ddblock.getDestDist().get() <<endl;
 
 
 					// Get EIDs
@@ -154,7 +142,7 @@ namespace dtn
 				} catch(const std::bad_cast&) {};
 
 			}
-			//---------------
+			cout<<"****************************************************"<<endl;
 			//*****************************************************************************************
 
 
@@ -175,11 +163,9 @@ namespace dtn
 			// reset the task queue
 			_taskqueue.reset();
 
-			cout<<"ComponetUp Up Up Up!!!"<<endl;
-
 			//**************************************************
 			//Some initialization of data structures
-			cout<<"---------------- ComponetUp Up Up Up!!! ------------------"<<endl;
+			cout<<"---------------- Initializing the Distance Routing Approach ------------------"<<endl;
 			dt._distanceTable.clear();
 			cs._contentStorage.clear();
 			pit._pendingInterestTable.clear();
