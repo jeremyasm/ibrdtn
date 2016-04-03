@@ -87,10 +87,11 @@ class EchoClient : public dtn::api::Client
 			size_t flag1;
 			dtn::data::DBlock &db = builder.insert<dtn::data::DBlock>(flag1);
 
-			db.setSrcDist(dtn::data::Integer(1));
-			db.setDestDist(dtn::data::Integer(2));
-			db.setType(dtn::data::Integer(1));
-			db.setDataName(BundleString("test on 1025!!!"));
+			db.setSrcDist(dtn::data::Integer(8));
+			db.setDestDist(dtn::data::Integer(8));
+			db.setType(dtn::data::Integer(8));
+			//db.setDataName(BundleString("test on 1025!!!"));
+			db.setDataName(BundleString("test on 2016, from ndndtn1"));
 
 			// open the iostream
 			{

@@ -62,7 +62,7 @@ namespace dtn
 		}
 		//*************
 
-		dtn::data::Integer DBlock::getSrcDist(){
+		dtn::data::Integer DBlock::getSrcDist() const{
 
 			return _srcDist;
 		}

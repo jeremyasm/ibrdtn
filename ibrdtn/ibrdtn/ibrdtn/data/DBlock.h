@@ -51,7 +51,7 @@ namespace dtn
 			//void setType(int value);
 
 			//added by lyx 2015-7-2
-			dtn::data::Integer getSrcDist();
+			dtn::data::Integer getSrcDist() const;
 			dtn::data::Integer getDestDist() const;
 			dtn::data::Integer getType() const;
 			dtn::data::BundleString getDataName() const;
