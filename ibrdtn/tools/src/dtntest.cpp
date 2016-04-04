@@ -122,8 +122,12 @@ class EchoClient : public dtn::api::Client
 
 			// send the bundle
 			(*this) << b;
+			//for test, lyx
+			std::cout<< b.toString()<<std::endl;
+			std::cout<< "destination:"<<b.destination.getString()<<std::endl;
+			std::cout<< "source:"<<b.source.getString()<<std::endl;
+			std::cout<< "timestamp:"<<b.timestamp.toString()<<std::endl;
 
-			std::cout<< b <<std::endl;
 			// ... flush out
 			flush();
 

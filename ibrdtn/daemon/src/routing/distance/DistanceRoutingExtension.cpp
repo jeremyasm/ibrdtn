@@ -70,36 +70,14 @@ namespace dtn
 			const std::set<dtn::core::Node> nl = dtn::core::BundleCore::getInstance().getConnectionManager().getNeighbors();
 
 			//******************************************************************************************
+			cout<<"********************"<<endl;
+			cout<<"---- receive a Bundle ----"<<endl;
 			itest++;
 			cout<<"Bundle No."<<itest<<endl;
-			//cout<<"Recevie a bundle!!! This is distance routing extension !!!" <<endl;  //for test, lyx
-
-			//****************
-			//the data name should be read from the bundle!!!!!!
-			//this is a fake name;!!!! just for test
-			//****************
-			/*
-			BundleString dataName817 = BundleString("THREENODESTEST");
-			cout<<"****************************************************"<<endl;
-			std::map<dtn::data::BundleString, DataEmTs >::iterator iter_dataName;
-			iter_dataName = cs._contentStorage.find(dataName817);
-			if(iter_dataName != cs._contentStorage.end()){
-
-					cout<<"The data is : "<< cs._contentStorage[dataName817]._data<<endl;
-					cout<<"The eligible mark is : "<<cs._contentStorage[dataName817]._eligibleMark<<endl;
-					cout<<"The timestamp is : "<<cs._contentStorage[dataName817]._timestamp<<endl;
-			}
-			else{  //Couldn't find the key, so just insert/add one new entry ...
-					cout<<"Couldn't find the key!!!"<< endl;
-			}
-			cout<<"**********"<<endl;
-			*/
-			//---------------
-
 
 			dtn::data::Bundle bundle2 = dtn::core::BundleCore::getInstance().getStorage().get(meta);
 			// Read from Primary Bundle Block
-			cout<<"----- Primary Bundle Block -----"<<endl;
+			cout<<"----- print Primary Bundle Block -----"<<endl;
 			cout<<"Bundle-Flags: "<<bundle2.procflags.toString()<<endl;
 			cout<<"Bundle-Destination: "<<bundle2.destination.getString()<<endl;
 			cout<<"Bundle-Source: "<<bundle2.source.getString()<<endl;
@@ -110,7 +88,7 @@ namespace dtn
 				try {
 					const dtn::data::PayloadBlock &payload =
 							dynamic_cast<const dtn::data::PayloadBlock&>(**iter);
-					cout<<"----- Print the Payload Block -----"<<endl;
+					cout<<"-- print Payload Block --"<<endl;
 					// Create payload attachment
 					ibrcommon::BLOB::iostream data = payload.getBLOB().iostream();
 					std::stringstream ss;
@@ -122,11 +100,31 @@ namespace dtn
 				try {
 					const dtn::data::DBlock &ddblock =
 							dynamic_cast<const dtn::data::DBlock&>(**iter);
-					cout<<"----- Print the DBlock -----"<<endl;
-					cout<<"--- the data name of the bundle is: "<< ddblock.getDataName()<<endl;
-					cout<<"--- the type of the bundle is:" << ddblock.getType().get()<<endl;
-					cout<<"--- the distance to the destination node is: "<< ddblock.getDestDist().get() <<endl;
+					cout<<"-- print DBlock --"<<endl;
+					cout<<"Bundle-Data Name: "<< ddblock.getDataName()<<endl;
+					cout<<"Bundle-Type: " << ddblock.getType().get()<<endl;
+					cout<<"Bundle-Dest Distance:  "<< ddblock.getDestDist().get() <<endl;
 
+					cout<<"......"<<endl;
+					cout<<"---- Searching in CS ----"<<endl;
+
+					BundleString dataName817 = ddblock.getDataName(); //read dataName from DBlock of the recieved bundle
+
+					std::map<dtn::data::BundleString, DataEmTs >::iterator iter_dataName;
+					iter_dataName = cs._contentStorage.find(dataName817);
+					if(iter_dataName != cs._contentStorage.end()){
+
+						cout<<"The data is : "<< cs._contentStorage[dataName817]._data<<endl;
+						cout<<"The eligible mark is : "<<cs._contentStorage[dataName817]._eligibleMark<<endl;
+						cout<<"The timestamp is : "<<cs._contentStorage[dataName817]._timestamp.toString()<<endl;
+
+					}
+					else{  //Couldn't find the key, so just insert/add one new entry ...
+						cout<<"Couldn't find the matching entry for * "<<dataName817<<"* !"<< endl;
+					}
+					cout<<"********************"<<endl;
+
+					//---------------
 
 					// Get EIDs
 					if(ddblock.get(dtn::data::Block::BLOCK_CONTAINS_EIDS))
@@ -142,7 +140,7 @@ namespace dtn
 				} catch(const std::bad_cast&) {};
 
 			}
-			cout<<"****************************************************"<<endl;
+
 			//*****************************************************************************************
 
 
@@ -163,20 +161,61 @@ namespace dtn
 			// reset the task queue
 			_taskqueue.reset();
 
-			//**************************************************
 			//Some initialization of data structures
 			cout<<"---------------- Initializing the Distance Routing Approach ------------------"<<endl;
+
+			cout<<"......"<<endl;
+			//clear the data structures
 			dt._distanceTable.clear();
 			cs._contentStorage.clear();
 			pit._pendingInterestTable.clear();
-			//-----------------------------------
+
+			cout<<"---- Insert some data in Content Storage ----"<<endl;
+			//enrty-1
+			dtn::routing::DataEmTs det_test1;
+			dtn::data::BundleString dataName_test1 = BundleString("DataName1"); //data name of the content entry
+			det_test1._data = BundleString("data content for DataName1"); //data content of the content entry
+			det_test1._eligibleMark = 1;   //0 -- ineligible, 1 -- eligible (default)
+			det_test1._timestamp = dtn::utils::Clock::getTime();
+			cs._contentStorage.insert(pair<dtn::data::BundleString, DataEmTs>(dataName_test1,det_test1));
+
+			cout<<"-- content entry-1 --"<<endl;
+			cout<<"data name | "<<dataName_test1<<endl;
+			cout<<"data content | "<<det_test1._data<<endl;
+			cout<<"eligible mark | "<<det_test1._eligibleMark<<endl;
+			cout<<"timestamp | "<<det_test1._timestamp.toString()<<endl;
+
+
+			//entry-2
 			dtn::routing::DataEmTs det_test2;
-			dtn::data::BundleString dataName_test2 = BundleString("THREENODESTEST");
-			det_test2._data = BundleString("it's a three nodes test!");
-			det_test2._eligibleMark = 1;   //0 -- ineligible, 1 -- eligible
+			dtn::data::BundleString dataName_test2 = BundleString("DataName2"); //data name of the content entry
+			det_test2._data = BundleString("data content for DataName2"); //data content of the content entry
+			det_test2._eligibleMark = 1;   //0 -- ineligible, 1 -- eligible (default)
 			det_test2._timestamp = dtn::utils::Clock::getTime();
 			cs._contentStorage.insert(pair<dtn::data::BundleString, DataEmTs>(dataName_test2,det_test2));
-			//**************************************************
+
+			cout<<"-- content entry-2 --"<<endl;
+			cout<<"data name | "<<dataName_test2<<endl;
+			cout<<"data content | "<<det_test2._data<<endl;
+			cout<<"eligible mark | "<<det_test2._eligibleMark<<endl;
+			cout<<"timestamp | "<<det_test2._timestamp.toString()<<endl;
+
+			//entry-3
+			dtn::routing::DataEmTs det_test3;
+			dtn::data::BundleString dataName_test3 = BundleString("DataName3"); //data name of the content entry
+			det_test3._data = BundleString("data content for DataName3"); //data content of the content entry
+			det_test3._eligibleMark = 1;   //0 -- ineligible, 1 -- eligible (default)
+			det_test3._timestamp = dtn::utils::Clock::getTime();
+			cs._contentStorage.insert(pair<dtn::data::BundleString, DataEmTs>(dataName_test3,det_test3));
+
+			cout<<"-- content entry-3 --"<<endl;
+			cout<<"data name | "<<dataName_test3<<endl;
+			cout<<"data content | "<<det_test3._data<<endl;
+			cout<<"eligible mark | "<<det_test3._eligibleMark<<endl;
+			cout<<"timestamp | "<<det_test3._timestamp.toString()<<endl;
+
+			cout<<"------------------------------------------------------------------------------"<<endl;
+			cout<<"......"<<endl;
 
 			// routine checked for throw() on 15.02.2013
 			try {

@@ -92,7 +92,6 @@ namespace dtn
 			std::string getHost() const throw ();
 			const std::string getScheme() const;
 			const std::string getSSP() const;
-
 			std::string getDelimiter() const;
 
 			/**

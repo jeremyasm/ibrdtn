@@ -1,11 +1,13 @@
 /*
 * dtnsendbundle.cpp
 *
-* -- IBR-DTN example for Yaoxing --
+* -- send a bundle with data name --
 *
-* Copyright (C) 2015 IBR, TU Braunschweig
+* Copyright (C) 2016 IBR, TU Braunschweig
 *
-* Written-by: Björn Gernert <gernert@ibr.cs.tu-bs.de>
+* Modified-by: Yaoxing Li <liyaoxing1991@126.com>
+* Inspired-by: Björn Gernert <gernert@ibr.cs.tu-bs.de>
+*
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -28,40 +30,70 @@
 
 void print_help()
 {
-cout << "-- dtnsendbundle (IBR-DTN example for Yaoxing) --" << endl;
-cout << "Syntax: dtnsend <dst>" << endl;
-cout << " <dst> Set the destination eid (e.g. dtn://node/filetransfer)" << endl;
+	cout << "-- dtnsendbundle (send a bundle with data name) --" << endl;
+	cout << "Syntax: dtnsend <dst> <dataName>" << endl;
+	cout << " <dst> Set the destination eid (e.g. dtn://node/filetransfer)" << endl;
+	cout << " <dataName> The name of the data to request (default value is DataName)" << endl;
 }
+
 int main(int argc, char *argv[])
 {
-bool error = false;
-string destination = "dtn://local/filetransfer";
-string file_source = "";
-ibrcommon::File unixdomain;
-unsigned int lifetime = 3600;
-if(argc <= 1 || argc > 2)
-{
-print_help();
-return -1;
-}
-for (int i = 1; i < argc; ++i)
-{
-cout << argv[i] << endl;
-if (argv[i][0] == '-')
-{
-std::string arg = argv[i];
-// print help if requested
-if (arg == "-h" || arg == "--help")
-{
-print_help();
-return 0;
-}
-}
-else
-{
-destination = argv[i];
-}
-}
+ bool error = false;
+ string destination = "dtn://local/filetransfer";
+ string file_source = "";
+ string dataNameTest = "";
+ ibrcommon::File unixdomain;
+ unsigned int lifetime = 3600;
+
+ std::list<std::string> arglist;
+
+ 	for (int i = 0; i < argc; ++i)
+ 	{
+ 		if (argv[i][0] == '-')
+ 		{
+ 			std::string arg = argv[i];
+
+ 			// print help if requested
+ 			if (arg == "-h" || arg == "--help")
+ 			{
+ 				print_help();
+ 				return 0;
+ 			}
+ 			else
+ 			{
+ 				std::cout << "invalid argument " << arg << std::endl;
+ 				return -1;
+ 			}
+ 		}
+ 		else
+ 		{
+ 			arglist.push_back(argv[i]);
+ 		}
+ 	}
+
+ 	if (arglist.size() <= 1)
+ 	{
+ 		print_help();
+ 		return -1;
+ 	} else if (arglist.size() == 2)
+ 	{
+ 		std::list<std::string>::iterator iter = arglist.begin(); ++iter;
+
+ 		// the first parameter is the destination
+ 		destination = (*iter);
+ 		dataNameTest = "DataName"; //by default
+ 	}
+ 	else if (arglist.size() > 2)
+ 	{
+ 		std::list<std::string>::iterator iter = arglist.begin(); ++iter;
+
+ 		// the first parameter is the destination
+ 		destination = (*iter); ++iter;
+
+ 		// the second parameter is the dataName
+ 		dataNameTest = (*iter);
+ 	}
+
 try {
 // @Yaoxing: Now we try to connect to the IBR-DTN daemon
 // Create a stream to the server using TCP.
@@ -89,23 +121,24 @@ client.connect();
 EID addr = EID(destination);
 // @Yaoxing: Now we create a new bundle
 cout << "Transfer bundle to " << addr.getString() << endl;
+
 try {
 
 
 dtn::data::Bundle b;
 
 b.lifetime = lifetime;
+b.destination = addr; // missed before, important
 
 
 
 // @Yaoxing: Add DBlock here
-//remove const
 dtn::data::DBlock &db = b.push_back<dtn::data::DBlock>();
-db.setSrcDist(dtn::data::Integer(1));
+db.setSrcDist(dtn::data::Integer(0));
 db.setDestDist(dtn::data::Integer(2));
-db.setType(dtn::data::Integer(1));
-db.setDataName(BundleString("test on 1025!!!"));
-
+db.setType(dtn::data::Integer(0)); // 0: Interest, 1: Data
+//db.setDataName(BundleString("DataName"));
+db.setDataName(BundleString(dataNameTest));
 
 client << b;
 client.flush();

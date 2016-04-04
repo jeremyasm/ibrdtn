@@ -119,7 +119,7 @@ namespace dtn
 			Number lifetime;
 			Number appdatalength;
 
-			EID destination;
+			dtn::data::EID destination;
 			EID reportto;
 			EID custodian;
 
